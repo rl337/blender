@@ -1,3 +1,4 @@
+BINDIR=`dirname "$0"`
 
 if [ "X$BLENDER_HOME" == "X" ]; then
     BLENDER_HOME="/Applications/blender-2.78a-OSX_10.6-x86_64"
@@ -10,4 +11,4 @@ if [ ! -f "$BLENDER_BIN" ]; then
     exit -1
 fi
 
-"$BLENDER_BIN" --background --python "$@"
+PYTHONPATH="$BINDIR/." "$BLENDER_BIN" --background --python "$@"

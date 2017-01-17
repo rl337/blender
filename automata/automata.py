@@ -5,6 +5,7 @@ import os
 import sys
 import logging
 
+import fileio.blender
 
 def extract_script_args(sysargs):
     blender_args_end = None
@@ -13,32 +14,6 @@ def extract_script_args(sysargs):
         return sysargs[blender_args_end+1:]
     except ValueError as e:
         return []
-
-def render(width, height, filename):
-    old = os.dup(1)
-    os.close(1)
-    os.open("/dev/null", os.O_WRONLY) 
-
-    bpy.context.scene.render.filepath = filename
-    bpy.context.scene.render.resolution_x = width
-    bpy.context.scene.render.resolution_y = height
-    bpy.ops.render.render( write_still=True ) 
-
-    os.close(1)
-    os.dup(old) # should dup to 1
-    os.close(old)
-
-def save(filename):
-    old = os.dup(1)
-    os.close(1)
-    os.open("/dev/null", os.O_WRONLY) 
-
-    bpy.ops.wm.save_as_mainfile(filepath=filename)
-
-    os.close(1)
-    os.dup(old) # should dup to 1
-    os.close(old)
-
 
 def createMeshFromPrimitive(name, origin):
     bpy.ops.mesh.primitive_cone_add(
@@ -73,10 +48,10 @@ def createMeshFromPrimitive(name, origin):
         count += 1
 
     bpy.ops.object.mode_set(mode = 'EDIT') 
-    bpy.ops.mesh.extrude_vertices_move(
-        MESH_OT_extrude_verts_indiv={"mirror":False},
+    bpy.ops.mesh.extrude_region_move(
+        MESH_OT_extrude_region={"mirror":False},
         TRANSFORM_OT_translate={
-            "value": [0, 0, -5],
+            "value": [0, 0, -0.5],
         }
     )
 
@@ -90,13 +65,15 @@ filename = args.pop()
 if not filename.endswith('.blend'):
     filename = "%s.blend" % filename
 
+mainfile = fileio.blender.MainFile(filename)
+renderfile = fileio.blender.RenderFile('a.jpg', 1024, 768)
+
 if 'Cube' in bpy.data.meshes:
     mesh = bpy.data.meshes["Cube"]
 
     bpy.data.meshes.remove(mesh, do_unlink=True)
 
 createMeshFromPrimitive("cone001", (0, 0, 0))
-save(filename)
 
-render(1024, 768, 'a.jpg')
-
+mainfile.save()
+renderfile.render()
