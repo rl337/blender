@@ -18,10 +18,10 @@ class OutputRedirectedFile(object):
             os.close(1)
             os.open("/dev/null", os.O_WRONLY)
 
-            if self.fnc is not None:
-                self.fnc(self.filename)
+            if func is not None:
+                func()
         except:
-            pass
+            raise
 
         finally:
             if old is not None:
@@ -48,7 +48,6 @@ class RenderFile(OutputRedirectedFile):
         self.height = height
 
     def _render(self):
-
         bpy.context.scene.render.filepath = self.filename
         bpy.context.scene.render.resolution_x = self.width
         bpy.context.scene.render.resolution_y = self.height
