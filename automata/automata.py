@@ -31,7 +31,7 @@ if 'Cube' in bpy.data.meshes:
 
     bpy.data.meshes.remove(mesh, do_unlink=True)
 
-cone = shapes.primitives.Cone("cone0001")
+tetrahedron = shapes.primitives.Tetrahedron("tetrahedron0001")
 
 mainfile.save()
 renderfile.render()
