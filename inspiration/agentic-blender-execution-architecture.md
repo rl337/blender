@@ -9,7 +9,7 @@ Branch: docs/blender-tool-inspiration-catalog
 
 This document sketches a June-orchestrated, MechaHarness-driven 3D asset and scene foundry with local-first inference, typed Blender operations, reusable visual-judging recipes, and curated publishing.
 
-**Folk visual judging source status: NOT VERIFIED.** A search for `rl337/folk` and GitHub code searches for `visual judge`, `visual judging`, `recipe`, and `screenshot` in that repository did not locate the requested code. Do not interpret the following proposed visual judging contracts as descriptions of existing Folk implementation. Before implementing, locate the correct Folk repository/ref and inspect its actual recipes, prompts, grading data types, thresholds, retry behavior, screenshots, and tests. Integrate existing recipe semantics rather than duplicating them.
+**Folk visual judging source status: VERIFIED in `rl337/finder-of-lost-keys`.** See the source-grounded section below. The architecture's enhanced visual evidence, confidence and repair contracts are proposals layered on top of Folk's existing implementation, not claims that Folk already implements them.
 
 ## Design boundaries
 
@@ -108,7 +108,7 @@ Principles:
 7. After repair, re-run the original validators and judges. Persist judge inputs, outputs, model identity and evidence.
 8. Human and test-suite drivers must be able to supply the same verdict contract.
 
-**Folk integration TODO**: inspect the actual recipes and map their node structure, camera/screenshot capture, grading prompts, acceptance thresholds, failure feedback, human approval and tests onto this subgraph. Prefer an adapter or extraction into MechaHarness over a fork.
+**Folk integration**: see the verified implementation map below. Prefer an adapter or extraction into MechaHarness over a fork.
 
 ## Runtime semantics
 
@@ -140,7 +140,7 @@ Candidate artifacts are never silently promoted into the curated library. Publis
 | Construct / worker | Scenario Blender plugin, Blender MCP | Concrete code patterns where licensed | Main-thread dispatch, typed tools, process isolation |
 | Construct / neural generation | TRELLIS, TripoSR, Stable Fast 3D, Hunyuan3D | Optional model/code adapters | Local GPU/RAM and licences |
 | Capture | Scenario capture_views | Implementation pattern | Contact sheets, multiple camera viewpoints |
-| VisualJudge | Folk visual recipes (unverified), Loopcut | **Existing internal recipe to inspect**, conceptual feedback loop | Locate Folk source and compare contracts |
+| VisualJudge | Folk `folk.stage.verify` (verified), Loopcut | Existing internal recipe and conceptual feedback loop | Locate Folk source and compare contracts |
 | Resolve | Loopcut, Codex | Concepts / supported SDK integration | Failed-operation packaging, escalation policy |
 | Checkpoint | Loopcut, MechaHarness existing resume design | Concept / existing primitive | Coordinate scene snapshots and graph recovery |
 | External jobs | Scenario | Concrete implementation patterns | Idempotency, cost approval, uncertain job reconciliation |
@@ -162,7 +162,8 @@ Source catalog: [blender-tools-and-repositories.md](blender-tools-and-repositori
 
 ## Open questions / TODO
 
-- [ ] Locate Folk repository and **read concrete visual-judging recipes**; revise this document with exact file paths, APIs and node mapping.
+- [x] Locate Folk repository and read concrete visual-judging recipes; exact file paths and mapping below.
+- [ ] Compare Folk's current stage implementation with any more recent branches and test against installed MechaHarness versions.
 - [ ] Inspect current MechaHarness and June primitives before implementing overlapping nodes or persistence.
 - [ ] Inspect current Blender repo assets and preserve paths and licences.
 - [ ] Inspect Folk CMS data model and reuse it where possible.
@@ -171,3 +172,53 @@ Source catalog: [blender-tools-and-repositories.md](blender-tools-and-repositori
 - [ ] Choose candidate storage versus curated Git/LFS/MinIO publication rules.
 - [ ] Establish objective and subjective judge acceptance thresholds from empirical tests.
 - [ ] Review upstream licence boundaries before copying code.
+
+## Verified FOLK stage verification implementation
+
+Source: [rl337/finder-of-lost-keys](https://github.com/rl337/finder-of-lost-keys), inspected on default branch at commit `20d7f12dac981837111faf94d5cf9ba3b92dc5ad`.
+
+**Existing executable recipe:** [`src/folk/recipes/stage_verify.py`](https://github.com/rl337/finder-of-lost-keys/blob/main/src/folk/recipes/stage_verify.py) defines `StageVerifyTemplate(GraphTemplate)`, name `folk.stage.verify`, version `1`, with `SoftPoint` bindings for `stage_id`, `run_id`, `modality`, `produce_kind`, `intent_keys`, `require_prior`, `artifact_src`, `max_repair` and other prompt fields.
+
+Actual graph: **precheck → mint_checklist → produce → judge → gate**. Each node is constructed with MechaHarness `make_node` and explicit `DependencyEdge` dependencies. [`src/folk/recipes/_stage_chain.py`](https://github.com/rl337/finder-of-lost-keys/blob/main/src/folk/recipes/_stage_chain.py) composes the same five-stage chain into larger recipes using prefixed node IDs and returns the gate node ID. This is the concrete pattern to reuse for Blender rather than inventing a new judge framework.
+
+**Concrete runner logic:** [`src/folk/runners/stage.py`](https://github.com/rl337/finder-of-lost-keys/blob/main/src/folk/runners/stage.py) implements the five handlers:
+
+1. `precheck`: prior required stage verdicts must already be accepted, including artifact-presence checks.
+2. `mint_checklist`: reasoning completer converts stage intent to 3–8 falsifiable questions with IDs and a closed `concern` vocabulary. Temperature 0.2; normalized JSON persisted.
+3. `produce`: dispatches a bound `produce_kind` handler or copies an existing artifact into the stage; current noop mode can synthesize a fake artifact.
+4. `judge`: for images, injected `svc.judge` receives the image path and questions; for text, `reason_json` uses `svc.complete`. Temperature 0.1. Per-question results normalized and persisted.
+5. `gate`: combines deterministic artifact checks and all checklist results; rejects with repair hints if anything fails.
+
+**Pure deterministic domain:** [`src/folk/domain/stage_verify.py`](https://github.com/rl337/finder-of-lost-keys/blob/main/src/folk/domain/stage_verify.py) implements normalized checklists and judgments, concern mapping, fail-closed missing checklist answers, prior-stage prechecks and aggregate gate. The existing deterministic artifact check verifies presence/non-empty files; Blender should add real mesh/UV/scene/export validators as injected deterministic gates.
+
+**Durable stage evidence** in `runs/<run_id>/stages/<stage_id>/`: `intent.json`, `checklist.json`, `artifact.png|json|fountain|...`, `judgment.json`, `verdict.json`. The `verdict.json` includes status and repair hints.
+
+**Test and DI patterns:** [`production/comic/HOST.md`](https://github.com/rl337/finder-of-lost-keys/blob/main/production/comic/HOST.md) documents `FolkConfig(MechaHarnessConfig)`, injected runner bindings, `FakeCompleter`, `FakeVlm`, `FakeComfy`, offline acceptance/rejection spine fixtures, and per-run SQLite checkpoint stores. Relevant tests: `tests/integration/test_stage_verify.py`, `tests/integration/test_spine_stage_cases.py`, `tests/support/stage_harness.py`, `tests/test_data/screenplay/fountain_to_lighting_reject__s001/`. FOLK's live policy currently keeps judge outputs canned to avoid flaky live gates; do not mistake the image judge hook for a proven production visual-evaluation integration.
+
+### Mapping to Blender
+
+| Existing FOLK pattern | Blender implementation |
+| --- | --- |
+| `StageVerifyTemplate` and `append_stage_verify` | Compose `blender.asset.generate`, `blender.scene.compose`, `blender.asset.ingest` with stage-verify subgraphs |
+| `mint_checklist` | Mint objective and visual criteria from frozen `AssetSpec`; freeze rubric before generation to avoid goalpost movement |
+| `produce_kind` dispatch | `blender.mesh.build`, `blender.scene.assemble`, `blender.render.views`, `blender.export.glb` |
+| `modality=image` judge | Inject local JuneSpark VLM over multiview images/contact sheets, not only a single image path |
+| `normalize_judgment` | Retain per-ID fail-closed behavior; extend with per-view evidence refs, uncertainty and issue localization |
+| `aggregate_gate` | Combine real mesh/UV/export/scale checks with visual requirements; fail closed |
+| `repair_hints` | Feed bounded repair subgraph and local/Codex escalation, then re-run same gate |
+| `require_prior` | Prevent downstream scene composition or publishing until referenced asset versions are accepted |
+| `stages/<stage_id>/` files | Durable Blender stage bundles with `.blend`, `.glb`, views, manifests and hashes |
+| Offline spine tests and SQLite resume | Deterministic Blender fixture runs and interrupted/resumed graph tests |
+
+### Extraction recommendation
+
+Keep Blender-specific camera capture, geometry inspection, rendering, file formats and taxonomy inside `rl337/blender`. Extract only the **generic** stage-verify graph template, checklist/judgment normalization, artifact references and gate policy into MechaHarness after proving compatibility with FOLK's existing tests. The FOLK recipe should then consume that common primitive via DI. June is not a required runtime for either project.
+
+### Verified limitations and design extensions
+
+- `max_repair` is exposed as a soft point, but the inspected five-node recipe itself has no repair loop. A bounded repair/resume subgraph is new work.
+- The existing image path accepts a single artifact; multiview evidence is an extension.
+- Current deterministic validation checks file presence, not geometric correctness.
+- Checklist generation is dynamic; Blender must ensure immutable acceptance criteria and stable rubric versions across retries.
+- The FOLK `HOST.md` explicitly says to prove the stage recipe in FOLK before promoting it upstream. Reuse that migration discipline.
+- Existing offline tests and fake judges establish graph behavior; live visual judgment quality needs a separate measured evaluation suite.
