@@ -1,0 +1,13 @@
+---
+description: Core conventions for this project bootstrap template and projects derived from it
+alwaysApply: true
+---
+
+# Core project conventions
+
+- Prefer small, focused changes that match existing structure.
+- All secrets and non-shareable env materials live under `.env/` (see `env-secrets` rule); never commit or bake them into images.
+- Update `docs/requirements/` when a decision becomes a durable constraint (`write-requirements` skill).
+- Update `.cursor/rules/` or `.cursor/skills/` when a convention should apply beyond one chat.
+- Prefer unambiguous basenames and a single `run_checks` entrypoint (see always-apply rules).
+- Do not add stack-specific scaffolding to the bootstrap template unless explicitly requested; see `docs/meta/COMMON-THREADS.md` before promoting a product skill here.

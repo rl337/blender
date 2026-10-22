@@ -1,0 +1,103 @@
+# ---------------------------------------------------------------------------
+# Secrets and local environment (MUST live under .env/)
+# Never bake credentials, auth materials, or identifiers into images.
+# ---------------------------------------------------------------------------
+.env
+.env/
+.env/*
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+**/secrets/
+
+# ---------------------------------------------------------------------------
+# VCS and editor / agent meta (not needed in runtime images)
+# ---------------------------------------------------------------------------
+.git/
+.gitignore
+.gitattributes
+.cursor/
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+.cache/
+.hypothesis/
+.ipynb_checkpoints/
+
+# ---------------------------------------------------------------------------
+# Godot Engine
+# ---------------------------------------------------------------------------
+.godot/
+.import/
+*.translation
+.mono/
+data_*/
+mono_crash.*.json
+export.cfg
+*.apk
+*.aab
+*.ipa
+
+# ---------------------------------------------------------------------------
+# Node / general build artifacts
+# ---------------------------------------------------------------------------
+node_modules/
+out/
+coverage/
+.turbo/
+.next/
+target/
+vendor/
+
+# ---------------------------------------------------------------------------
+# Docs and template meta (exclude unless a specific image needs them)
+# ---------------------------------------------------------------------------
+docs/
+README.md
+AGENTS.md
+*.md
+!**/requirements*.txt
+
+# ---------------------------------------------------------------------------
+# Logs
+# ---------------------------------------------------------------------------
+*.log
+.parcel-cache/
+.eslintcache

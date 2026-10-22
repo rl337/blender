@@ -1,0 +1,28 @@
+---
+description: Local run_checks entrypoint, PR CI, and build/ artifact placement before merge or push
+alwaysApply: true
+---
+
+# Validation gates
+
+## Single local entrypoint
+
+- Prefer a root `run_checks.sh` (or documented equivalent) that runs the same
+  automated tests, lints, and checks CI cares about.
+- Multi-language repos: one script should orchestrate **all** platform checks.
+- Agents: run that entrypoint after functional edits; do not push red checks.
+
+## PR CI
+
+- At least one GitHub Action (or host CI) should validate PRs with a relevant
+  subset of `run_checks` — ideally the full set when headless-feasible.
+
+## Artifacts
+
+- Generated reports, coverage HTML, and similar outputs go under `build/`
+  (gitignored), not scattered at the repo root.
+
+## Secrets
+
+- Checks must not require committed secrets; use `.env/` locally and CI secrets
+  stores remotely.

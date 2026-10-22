@@ -1,0 +1,13 @@
+---
+description: How to maintain agent meta (rules, skills, AGENTS.md, requirements)
+globs: "{AGENTS.md,.cursor/**,docs/requirements/**,docs/architecture/**}"
+alwaysApply: false
+---
+
+# Meta hygiene
+
+- One concern per rule or skill; name files for the workflow or constraint.
+- Skill frontmatter `description` must state when to use the skill (triggers).
+- Requirements docs state must/should constraints, not implementation diaries.
+- Requirements changes must create/update project skills (see `requirements-skills-sync`).
+- When deriving a new project from this template, rewrite `README.md` for the product and keep `AGENTS.md` accurate for that repo.

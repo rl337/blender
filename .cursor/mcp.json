@@ -1,0 +1,31 @@
+{
+  "mcpServers": {
+    "blender": {
+      "type": "stdio",
+      "command": "/Users/richard/Library/Python/3.9/bin/uvx",
+      "args": [
+        "mcp-for-blender"
+      ]
+    },
+    "mechaharness-generator": {
+      "type": "stdio",
+      "command": "/Users/richard/dev/mechaharness/.venv/bin/python",
+      "args": [
+        "-m",
+        "smithy.mcp_server"
+      ],
+      "env": {
+        "MECHA_WORKSPACE": "${workspaceFolder}",
+        "MECHA_GENERATOR_STORE": "${workspaceFolder}/.mechaharness/generator-runs.json",
+        "MECHA_GENERATOR_CONTROLLER": "cursor-agent",
+        "MECHA_INFERENCE_BACKEND": "openai_local",
+        "MECHA_BASE_URL": "http://127.0.0.1:8000/v1",
+        "MECHA_MODEL": "qwen3-30b-thinking",
+        "MECHA_API_KEY": "local",
+        "MECHA_HARNESS_FAMILY": "pass_through",
+        "PYTHONPATH": "${workspaceFolder}/src:/Users/richard/dev/mechaharness/src:/Users/richard/dev/pyiv",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}

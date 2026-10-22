@@ -1,0 +1,32 @@
+---
+description: pyiv dependency-injection-first wiring — Config hooks, not Settings grab-bags or string registries
+alwaysApply: true
+---
+
+# DI-first (pyiv)
+
+When this project uses pyiv DI, default path is **Config + constructor injection**.
+
+- New services, backends, and CLI/API wiring go through a project `*Config` and injectables.
+- Do **not** add string registries, service locators, or a global injector.
+- Extend by **subclassing Config** and overriding hooks (`get_*_class()`, connection/provider getters). Call `super().configure()`.
+- Constructors take types the injector can resolve — not opaque `str`/`dict` bags.
+- Prefer `Key` / `Named` / `Matched` when Config needs multiple bindings of the same type.
+- Facades (OpenAPI, `run()` helpers) may hide the injector but must still construct Config and inject — not grow a parallel factory registry.
+- Keep domain types injector-agnostic when practical; confine framework imports to DI/bootstrap modules.
+
+Injectables **own** their configuration (ctor args, nested config, `from_env()`). Do not grow `Settings` with fields only one injectable understands. Follow `.cursor/skills/di-config-ownership/SKILL.md`.
+
+```python
+# BAD — global registry / Settings as provider bag
+register_backend("x")(factory)
+Settings.media_url = "..."
+Settings.provider = SomeProvider(...)
+
+# GOOD — Config hook + owning injectable
+class AppConfig(ProjectConfig):
+    def get_inference_class(self):
+        return MyStrategy
+```
+
+Enable `alwaysApply: true` on this rule in derived projects that are DI-first end-to-end.
