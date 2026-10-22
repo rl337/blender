@@ -1,9 +1,11 @@
 # Agentic Blender Foundry: MechaHarness Execution Architecture
 
-Status: Architectural inspiration / proposed interfaces, not implemented
-Date: 2026-10-21
+Status: Architectural inspiration / proposed interfaces — **implementation started** as package `smithy` (pyiv CLI + MechaHarness `DurableGraphGenerator` + generator MCP)
+Date: 2026-10-21 (updated 2026-10-22)
 Companion: [Blender tools and repositories](blender-tools-and-repositories.md)
 Branch: docs/blender-tool-inspiration-catalog
+
+**Implementation note (2026-10-22):** Entry point is `smithy` under `src/smithy/`. Host Config is `SmithyConfig`. First recipe `smithy.prop_scaffold`. Frontier guidance via `smithy-generator` MCP; local `openai_local` for token-heavy work. N14E `Untitled/` remains process inspiration only.
 
 ## Scope and source verification
 

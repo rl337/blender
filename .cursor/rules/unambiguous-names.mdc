@@ -1,0 +1,31 @@
+---
+description: File and module names must be unambiguous in directory listings
+alwaysApply: true
+---
+
+# Unambiguous names
+
+A basename must identify the concept **without opening the file**. Applies to
+`src/`, `tests/`, `docs/`, `.cursor/`, and packages — not only tests.
+
+## Rules
+
+- Prefer the **domain term** over a short generic noun (`judgement_policy`, not `policy`).
+- Mirror source ↔ test: `foo.py` ↔ `test_foo.py` (or language equivalent).
+- One concern per test module — no bag files (`test_misc.py`).
+- If two peers could share a short name, pick the longer disambiguator at the leaf.
+- When renaming public imports, prefer a thin re-export shim and update call sites/docs in the same change when practical.
+
+## Litmus
+
+From a directory listing, would a newcomer pick the right file for the concept
+they have in mind? If not, rename before merge.
+
+```text
+# BAD
+policy.py / test_policy.py / test_phases.py
+
+# GOOD
+judgement_policy.py / test_judgement_policy.py
+test_graph.py, test_routing.py, …
+```

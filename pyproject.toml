@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smithy"
+version = "0.1.0"
+description = "Blender asset foundry — pyiv CLI, MechaHarness orchestration, local inference"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name = "Richard Lee", email = "rlee@tokyo3.com" },
+]
+dependencies = [
+  "pyiv>=1.1.1",
+  "mechaharness>=0.7.1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2",
+  "ruff>=0.5",
+]
+
+[project.scripts]
+smithy = "smithy.cli:cli"
+smithy-generator = "smithy.mcp_server:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+smithy = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

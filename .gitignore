@@ -1,0 +1,129 @@
+# ---------------------------------------------------------------------------
+# Secrets and local environment (MUST live under .env/)
+# ---------------------------------------------------------------------------
+# Convention: all secrets live under .env/ (directory).
+# Un-ignore the dir, ignore its contents, keep the tracked README.
+.env/
+!.env/
+.env/**
+!.env/README.md
+
+# Legacy / accidental secret filenames outside .env/ (defense in depth)
+# Root-level .env *file* only (directory handled above)
+/.env
+.env.*
+!.env/
+!.env.example
+!.env/README.md
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+**/secrets/
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+.cache/
+.hypothesis/
+*.cover
+.pdm-python
+.pdm-build/
+.ipynb_checkpoints/
+
+# ---------------------------------------------------------------------------
+# Godot Engine
+# ---------------------------------------------------------------------------
+.godot/
+.import/
+*.translation
+.mono/
+data_*/
+mono_crash.*.json
+export.cfg
+# Uncomment if you prefer not to share export presets:
+# export_presets.cfg
+*.apk
+*.aab
+*.ipa
+
+# ---------------------------------------------------------------------------
+# Node / general build (template-friendly defaults)
+# ---------------------------------------------------------------------------
+node_modules/
+out/
+coverage/
+.turbo/
+.next/
+target/
+vendor/
+
+# ---------------------------------------------------------------------------
+# OS and editors
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo
+*~
+
+# ---------------------------------------------------------------------------
+# Logs and caches
+# ---------------------------------------------------------------------------
+*.log
+.parcel-cache/
+.eslintcache
+
+# ---------------------------------------------------------------------------
+# MechaHarness / Smithy local run state
+# ---------------------------------------------------------------------------
+.mechaharness/
+
+# ---------------------------------------------------------------------------
+# Large / local Blender assets (inventory before committing)
+# ---------------------------------------------------------------------------
+Untitled/
+*.blend1
+
+# ---------------------------------------------------------------------------
+# Cursor / agent local (keep project rules/skills tracked)
+# ---------------------------------------------------------------------------
+.cursor/mcp.json.local

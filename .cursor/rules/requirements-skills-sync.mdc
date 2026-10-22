@@ -1,0 +1,34 @@
+---
+description: When docs/requirements change, create or update matching project skills so agents can execute the new constraints
+alwaysApply: true
+---
+
+# Requirements ↔ skills sync
+
+Requirements are normative. **Project skills are how agents carry them out.**
+When requirements are added, removed, or materially changed, update local
+skills in the **same change** (or immediately after in the same session).
+
+## When this fires
+
+- Creating or editing files under `docs/requirements/`
+- Promoting a chat decision into a durable MUST/SHOULD
+- Retiring or narrowing a requirement (skills must not keep enforcing the old bar)
+
+## What to do
+
+1. **Identify the workflow** the requirement implies (how an agent should act, not only what is true).
+2. **Find or create** `.cursor/skills/<name>/SKILL.md`:
+   - New procedural constraint → new skill (one concern per skill).
+   - Change to an existing workflow → update that skill’s checklist, triggers, and anti-patterns.
+3. **Frontmatter `description`** must include when to use the skill and enough trigger phrases that the requirement’s theme is discoverable.
+4. **Link both ways** when useful: skill cites requirement IDs/paths; requirement “See also” points at the skill.
+5. **Update `AGENTS.md`** skill table if a skill was added or renamed.
+6. **Remove or rewrite** skills that only existed to enforce a deleted requirement — do not leave stale procedures.
+
+## Do not
+
+- Leave a new requirement with no agent-facing procedure when agents are expected to uphold it.
+- Stuff unrelated requirements into one sprawling skill — split by workflow.
+- Duplicate the full requirements doc into the skill — cite IDs and restate only the actionable steps.
+- Put secrets or live env values into skills; point at `.env/` and tracked examples instead.
